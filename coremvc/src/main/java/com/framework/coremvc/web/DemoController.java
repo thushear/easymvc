@@ -17,6 +17,7 @@
 
 package com.framework.coremvc.web;
 
+import com.framework.coremvc.controller.annotation.QueryParam;
 import com.framework.coremvc.route.RequestInfo;
 import com.framework.coremvc.route.RequestMethod;
 import com.framework.coremvc.route.RequestMethod.HttpMethod;
@@ -48,7 +49,7 @@ public class DemoController {
     
     @RequestInfo(path = "/demo1")
     @RequestMethod(requestMethod = HttpMethod.GET,returnType = HttpReturnType.STRING )  
-    public String demo1(){
+    public String demo1(  String id ,@QueryParam("name")  String name){
 	return null;
     }
     
