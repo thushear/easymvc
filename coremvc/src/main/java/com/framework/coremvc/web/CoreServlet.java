@@ -17,18 +17,20 @@
 
 package com.framework.coremvc.web;
 
-import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import com.alibaba.fastjson.JSON;
+import com.framework.coremvc.context.MVCContext;
+import com.framework.coremvc.core.CoreService;
+import com.framework.coremvc.route.RequestRoute;
+import org.apache.commons.collections.MapUtils;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.framework.coremvc.core.CoreService;
-import com.framework.coremvc.route.RequestRoute;
-
+import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * ClassName:CoreServlet <br/>
  * Function: TODO ADD FUNCTION. <br/>
@@ -39,6 +41,7 @@ import com.framework.coremvc.route.RequestRoute;
  * @since JDK 1.6
  * @see
  */
+
 /**
  * ClassName: CoreServlet <br/>
  * Function: TODO ADD FUNCTION. <br/>
@@ -46,29 +49,47 @@ import com.framework.coremvc.route.RequestRoute;
  * date: 2015年7月29日 下午10:47:04 <br/>
  *
  * @author kongming
- * @version
  * @since JDK 1.6
  */
 
 public class CoreServlet extends HttpServlet {
 
-    private ConcurrentHashMap<String, ConcurrentLinkedQueue<RequestRoute>> CACHE = new ConcurrentHashMap<String, ConcurrentLinkedQueue<RequestRoute>>();
 
-    @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp)
-	    throws ServletException, IOException {
-	
+	private final static Logger logger=Logger.getLogger(CoreServlet.class);
 
-    }
 
-    @Override
-    public void init() throws ServletException {
-	String scanPkg = getInitParameter("scanPkg");
-	CoreService coreService = new CoreService();
-	ConcurrentLinkedQueue<RequestRoute> routes = coreService
-		.getRouteInfos(scanPkg);
-	CACHE.putIfAbsent("routes", routes);
+	private ConcurrentHashMap<String, ConcurrentLinkedQueue<RequestRoute>> CACHE = new ConcurrentHashMap<String, ConcurrentLinkedQueue<RequestRoute>>();
 
-    }
+
+	private CoreService coreService = new CoreService();
+
+
+	@Override
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		MVCContext.requestThreadLocal.set(request);
+		MVCContext.responseThreadLocal.set(response);
+
+		logger.error(request.getServletPath() );
+		String requestUri = request.getRequestURI();
+		String requetMethod = request.getMethod();
+		ConcurrentLinkedQueue<RequestRoute> routes = CACHE.get("routes");
+		ConcurrentHashMap resultMap = coreService.route(routes, requestUri, requetMethod);
+		if(MapUtils.getBooleanValue(resultMap , "isRoute")){
+			RequestRoute requestRoute = (RequestRoute) MapUtils.getObject(resultMap, "route");
+			Object result = coreService.methodInvoke(requestRoute);
+
+		}
+	}
+
+	@Override
+	public void init() throws ServletException {
+		String scanPkg = getInitParameter("scanPkg");
+		CoreService coreService = new CoreService();
+		ConcurrentLinkedQueue<RequestRoute> routes = coreService
+				.getRouteInfos(scanPkg);
+		CACHE.putIfAbsent("routes", routes);
+
+	}
 
 }

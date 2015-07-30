@@ -33,6 +33,7 @@ import com.framework.coremvc.route.RequestMethod.HttpReturnType;
  * @since JDK 1.6
  * @see
  */
+
 /**
  * ClassName: DemoController <br/>
  * Function: TODO ADD FUNCTION. <br/>
@@ -40,24 +41,22 @@ import com.framework.coremvc.route.RequestMethod.HttpReturnType;
  * date: 2015年7月26日 下午12:27:52 <br/>
  *
  * @author kongming
- * @version
  * @since JDK 1.6
  */
-@RequestInfo(path = "/demo" )
+@RequestInfo(path = "/demo")
 public class DemoController {
-    
-    
-    @RequestInfo(path = "/demo1")
-    @RequestMethod(requestMethod = HttpMethod.GET,returnType = HttpReturnType.STRING )  
-    public String demo1(  String id ,@QueryParam("name")  String name){
-	return null;
-    }
-    
-    @RequestInfo(path = "/demo2/{demo2}")
-    @RequestMethod(requestMethod = HttpMethod.POST,returnType = HttpReturnType.STRING )  
-    public String demo2(){
-	return null;
-    }
-  
+
+	@RequestInfo(path = "/demo1.htm")
+	@RequestMethod(requestMethod = HttpMethod.GET, returnType = HttpReturnType.STRING)
+	public String demo1(@QueryParam("id") String id, @QueryParam("name") String name) {
+		System.out.println("id = " + id + ", name =" + name);
+		return null;
+	}
+
+	@RequestInfo(path = "/demo2/{demo2}")
+	@RequestMethod(requestMethod = HttpMethod.POST, returnType = HttpReturnType.STRING)
+	public String demo2() {
+		return null;
+	}
 
 }
