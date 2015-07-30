@@ -50,7 +50,7 @@ public class DemoController {
 	@RequestMethod(requestMethod = HttpMethod.GET, returnType = HttpReturnType.STRING)
 	public String demo1(@QueryParam("id") String id, @QueryParam("name") String name) {
 		System.out.println("id = " + id + ", name =" + name);
-		return null;
+		return "index.jsp";
 	}
 
 	@RequestInfo(path = "/demo2/{demo2}")
