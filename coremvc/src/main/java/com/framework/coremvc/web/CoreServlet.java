@@ -76,7 +76,7 @@ public class CoreServlet extends HttpServlet {
 
 	logger.error(request.getServletPath());
 	try {
-	    String requestUri = request.getRequestURI();
+	    String requestUri = request.getServletPath();
 	    String requetMethod = request.getMethod();
 	    ConcurrentLinkedQueue<RequestRoute> routes = CACHE.get("routes");
 	    ConcurrentHashMap resultMap = coreService.route(routes, requestUri,
