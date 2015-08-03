@@ -17,6 +17,10 @@
 
 package com.framework.coremvc.web;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.framework.coremvc.context.MVCContext;
 import com.framework.coremvc.controller.annotation.QueryParam;
 import com.framework.coremvc.route.RequestInfo;
 import com.framework.coremvc.route.RequestMethod;
@@ -50,7 +54,11 @@ public class DemoController {
 	@RequestMethod(requestMethod = HttpMethod.GET, returnType = HttpReturnType.STRING)
 	public String demo1(@QueryParam("id") String id, @QueryParam("name") String name) {
 		System.out.println("id = " + id + ", name =" + name);
-		return "index.jsp";
+		HttpServletRequest request = MVCContext.getRequest();
+		HttpServletResponse response = MVCContext.getResponse();
+		request.setAttribute("id", id);
+		request.setAttribute("name", name);
+		return "/index.jsp";
 	}
 
 	@RequestInfo(path = "/demo2/{demo2}")
