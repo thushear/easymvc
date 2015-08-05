@@ -15,6 +15,16 @@ public class SpringIOCTest {
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring-config.xml");
 		ITestApi iTestApi = applicationContext.getBean("test", TestImpl.class);
 		iTestApi.hello();
+        ITestApi2  testApi1 =  applicationContext.getBean("testApi1", ITestApi2.class);
+        testApi1.test();
+        ITestApi2  testApi2 =  applicationContext.getBean("testApi2", ITestApi2.class);
+        testApi2.test();
+
+        ITestApi2  testApi3 =  applicationContext.getBean("testApi3", ITestApi2.class);
+        testApi3.test();
+
+        ITestApi2  testApi4 =  applicationContext.getBean("testApi4", ITestApi2.class);
+        testApi4.test();
 	}
 
 }
