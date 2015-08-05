@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+				        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+				        " >
+
+
+    <bean id="test" class="com.framework.ioc.test.impl.TestImpl"/>
+
+    <!--默认构造器-->
+    <bean id="testApi1" class="com.framework.ioc.test.impl.TestApi2Impl"/>
+
+    <!--带参数构造器-->
+    <bean id="testApi2" class="com.framework.ioc.test.impl.TestApi2Impl">
+        <constructor-arg index="0" value="test2"/>
+    </bean>
+
+    <!--静态工厂-->
+    <bean id="testApi3" class="com.framework.ioc.test.impl.TestApi2StaticFactory" factory-method="newInstance">
+        <constructor-arg index="0" value="testfactory1"/>
+    </bean>
+
+    <!--实例工厂-->
+    <bean id="testApi2InstanceFactory" class="com.framework.ioc.test.impl.TestApi2InstanceFactory"/>
+    <bean id="testApi4" factory-bean="testApi2InstanceFactory" factory-method="newInstance">
+        <constructor-arg index="0" value="testfactory2"/>
+    </bean>
+
+
+    <!--DI-->
+  <!--  <bean id="byIndex" class="com.framework.ioc.di.DITestImpl">
+        <constructor-arg index="0" value="byIndex"/>
+    </bean>
+    <bean id="byName" class="com.framework.ioc.di.DITestImpl">
+        <constructor-arg name="message" value="byName"/>
+    </bean>
+    <bean id="byType" class="com.framework.ioc.di.DITestImpl">
+        <constructor-arg type="java.lang.String" value="byType"/>
+    </bean>-->
+
+
+    <bean id="bySetter" class="com.framework.ioc.di.DITestImpl">
+        <property name="message" value="bySetter"/>
+    </bean>
+
+    <bean id="beanBySetter" class="com.framework.ioc.di.DITestDecorator">
+        <property name="diTestApi" ref="bySetter"/>
+    </bean>
+
+
+   <!-- <bean id="circleA" class="com.framework.ioc.di.CircleA" scope="singleton">
+        <property name="circleB" ref="circleB"/>
+    </bean>
+    <bean id="circleB" class="com.framework.ioc.di.CircleB" scope="singleton">
+        <property name="circleA" ref="circleA"/>
+    </bean>-->
+
+    <bean id="circleA" class="com.framework.ioc.di.CircleA" scope="prototype">
+        <property name="circleB" ref="circleB"/>
+    </bean>
+    <bean id="circleB" class="com.framework.ioc.di.CircleB" scope="prototype">
+        <property name="circleA" ref="circleA"/>
+    </bean>
+
+
+    <!--自动装配-->
+    <bean id = "diTestApi" class="com.framework.ioc.di.DITestImpl" primary="true"/>
+     <bean id="DITestDecorator" class="com.framework.ioc.di.DITestDecorator" autowire="byName">
+    </bean>
+
+    <bean id="DITestDecorator1" class="com.framework.ioc.di.DITestDecorator" autowire="byType">
+    </bean>
+
+</beans>
