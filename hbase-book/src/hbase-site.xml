@@ -23,7 +23,7 @@
 <configuration>
 <property>
 <name>hbase.rootdir</name>
-<value>hdfs://192.168.159.129:9000/hbase</value>
+<value>hdfs://:9000/hbase</value>
 </property> 
 <property>
 <name>hbase.cluster.distributed</name>
@@ -35,6 +35,6 @@
 </property>
 <property>
 <name>hbase.zookeeper.property.dataDir</name>
-<value>/export/servers/zookeeper-3.4.6/data</value>
+<value></value>
 </property>
 </configuration>
