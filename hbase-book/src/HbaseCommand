@@ -1,0 +1,19 @@
+
+count ‘hly_temp’
+
+scan 'hly_temp',{LIMIT=>10}
+
+
+scan 'hly_temp', {COLUMNS => 'n:', LIMIT => 10}
+
+
+ hadoop jar lib/hbase-client-0.96.2-hadoop2.jar importtsv \ -Dimporttsv.columns=HBASE_ROW_KEY,t:v01,t:v02,t:v03,t:v04,t:v05,t:v06,t:v07,t:v08,t:v09,t:v10,t:v11,t:v12,t:v13,t:v14,t:v15,t:v16,t:v17,t:v18,t:v19,t:v20,t:v21,t:v22,t:v23,t:v24 \ hly_temp \  /user/hadoop/input/
+
+
+hbase org.apache.hadoop.hbase.mapreduce.ImportTsv  -Dimporttsv.columns=HBASE_ROW_KEY,t:v01,t:v02,t:v03,t:v04,t:v05,t:v06,t:v07,t:v08,t:v09,t:v10,t:v11,t:v12,t:v13,t:v14,t:v15,t:v16,t:v17,t:v18,t:v19,t:v20,t:v21,t:v22,t:v23,t:v24   hly_temp    /user/hadoop/input/
+
+
+scan 'music_user_bhvr_attr',{LIMIT=>10}
+
+
+hadoop jar hbase-secondary-index-0.1.jar net.hbase.secondaryindex.mapred.Main -i music_user_bhvr_attr -o music_user_bhvr_attr_index -c cf1:uid

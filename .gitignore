@@ -1,1 +1,17 @@
-/target
+.svn/
+target/
+test-output/
+*.class
+.classpath
+.project
+.settings/
+tmp
+temp
+*.log
+
+# IntelliJ Idea
+.idea/
+out/
+*.ipr
+*.iws
+*.iml
