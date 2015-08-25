@@ -1,16 +1,14 @@
 package com.framework.ioc.resource;
 
 import org.junit.Test;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.*;
 import org.springframework.util.Assert;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 
 public class ResourceTest {
 
@@ -47,6 +45,73 @@ public class ResourceTest {
 		}
 		System.out.println(resource.isOpen());
 	}
+
+	@Test
+	public void testClassPathResourceByDefaultClassLoader() throws IOException {
+		ClassPathResource resource = new ClassPathResource("spring-config.xml");
+		if (resource.exists()){
+			dumpStream(resource);
+		}
+		System.out.println(resource.getFile().getAbsolutePath());
+		System.out.println(resource.isOpen());
+	}
+
+
+	@Test
+	public void testClassPathResourceByClassLoader() throws IOException {
+		ClassPathResource resource = new ClassPathResource("com/framework/ioc/resource/test.properties",this.getClass().getClassLoader()	);
+		if (resource.exists()){
+			dumpStream(resource);
+		}
+		System.out.println(resource.getFile().getAbsolutePath());
+		System.out.println(resource.isOpen());
+	}
+
+
+
+
+	@Test
+	public void testClassPathResourceByClazz() throws IOException {
+		ClassPathResource resource = new ClassPathResource("com/framework/ioc/resource/test.properties",this.getClass()	);
+		if (resource.exists()){
+			dumpStream(resource);
+		}
+		System.out.println(resource.getFile().getAbsolutePath());
+		System.out.println(resource.isOpen());
+
+
+	}
+
+
+	@Test
+	public void testClassPathFromJar() throws IOException {
+		ClassPathResource resource = new ClassPathResource("overview.html");
+		if (resource.exists()){
+			dumpStream(resource);
+		}
+		System.out.println(resource.getURL());
+		System.out.println(resource.isOpen());
+	}
+
+
+	@Test
+	public void testUrlResource() throws IOException {
+		Resource resource = new UrlResource("file:d:/table.txt");
+		if (resource.exists()){
+			dumpStream(resource);
+		}
+		System.out.println(resource.getURL());
+		System.out.println(resource.isOpen());
+
+		Resource resource1 = new UrlResource("http://group.jd.com/index/20000001.htm");
+		if (resource1.exists()){
+			dumpStream(resource1);
+		}
+		System.out.println(resource1.getURL());
+		System.out.println(resource1.isOpen());
+
+	}
+
 
 
 	private void dumpStream(Resource resource) {
