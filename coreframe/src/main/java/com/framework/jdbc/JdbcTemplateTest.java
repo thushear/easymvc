@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -241,6 +242,25 @@ public class JdbcTemplateTest {
 
     @Test
     public void testQueryFor(){
+
+        int count = jdbcTemplate.queryForInt("select COUNT(1) from test");
+        System.out.printf("count = %d \n" , count);
+
+        Map<String, Object> map = jdbcTemplate.queryForMap("select * from test where id=0");
+        System.out.printf("map = %s \n" , map);
+
+        List<Map<String, Object>> list =  jdbcTemplate.queryForList("select * from test");
+        System.out.printf("queryList = %s \n" , list);
+
+        int count1 = jdbcTemplate.queryForObject("select count(1) from test", Integer.class);
+        System.out.printf("count1 = %d \n" , count1);
+
+        SqlRowSet sqlRowSet =  jdbcTemplate.queryForRowSet("select * from test");
+
+        while (sqlRowSet.next()){
+            System.out.printf("sqlRowSet = %s \n" , sqlRowSet.getInt(1) + ":" + sqlRowSet.getString(2) );
+
+        }
 
     }
 
