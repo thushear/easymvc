@@ -6,17 +6,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.object.SqlQuery;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.*;
+import java.util.*;
 
 /**
  * Created by thushear on 2015/8/31.
@@ -265,4 +266,169 @@ public class JdbcTemplateTest {
     }
 
 
+
+    @Test
+    public void testNamedParamterJdbcTempate() {
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+        Map<String,Object>  param = new HashMap<String, Object>();
+        param.put("name","name7");
+        String insertSql = "insert into test(name) values(:name)";
+        namedParameterJdbcTemplate.update(insertSql, param);
+        testSelect();
+
+
+        namedParameterJdbcTemplate.query("select * from test where name = :name", param, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                System.out.printf("rs id = %s , name = %s \n" , rs.getInt(1) , rs.getString(2));
+            }
+        });
+
+        namedParameterJdbcTemplate.update("delete from test where name = :name" , param);
+        testSelect();
+
+        SqlParameterSource  parameterSource = new MapSqlParameterSource(param);
+        namedParameterJdbcTemplate.update(insertSql , parameterSource) ;
+        testSelect();
+
+        class Param {
+            int id ;
+            String name ;
+
+            public int getId() {
+                return id;
+            }
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+        }
+
+        Param param1 = new Param();
+        param1.setName("name8");
+        SqlParameterSource beanParam = new BeanPropertySqlParameterSource(param1);
+
+        namedParameterJdbcTemplate.update(insertSql , beanParam);
+        testSelect();
+    }
+
+
+
+
+    @Test
+    public void testSimpleJdbcTemplate() {
+        SimpleJdbcTemplate simpleJdbcTemplate = new SimpleJdbcTemplate(jdbcTemplate);
+        simpleJdbcTemplate.update("insert into test(id,name) values(?,?)",10,"name21");
+        testSelect();
+
+        List<Map<String, Object>>  list =  simpleJdbcTemplate.queryForList("select * from test");
+        System.out.printf("list = %s \n" , list);
+
+        List<UserModel> userModelList = simpleJdbcTemplate.query("select * from test", new UserRowMapper());
+        System.out.printf("userModelList = %s \n" , userModelList);
+
+    }
+
+
+    @Test
+    public void testSqlQuery(){
+        SqlQuery sqlQuery = new UserModelSqlQuery(jdbcTemplate);
+        List<UserModel > list =  sqlQuery.execute("name1");
+        System.out.printf("list = %s \n" , list);
+    }
+
+    @Test
+    public void testSimpleInsert() {
+        SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate);
+        insert.withTableName("test");
+        Map<String,Object> param = new HashMap<String, Object>();
+        param.put("name","name22");
+        insert.compile();
+        insert.execute(param);
+        testSelect();
+
+        insert = new SimpleJdbcInsert(jdbcTemplate);
+        insert.withTableName("test");
+        insert.setGeneratedKeyName("id");
+        param.put("name" , "name25");
+        Number number =  insert.executeAndReturnKey(param);
+        System.out.printf("number = %s \n" , number);
+        testSelect();
+
+
+        int[] batch = insert.executeBatch(new Map[] {param, param , param});
+        System.out.printf("batch = %s \n" , Arrays.toString(batch));
+        testSelect();
+    }
+
+
+
+
+
+
+
+
 }
+class UserModel {
+    int id ;
+    String name ;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "UserModel{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
+}
+
+class  UserRowMapper implements RowMapper<UserModel> {
+
+    @Override
+    public UserModel mapRow(ResultSet rs, int rowNum) throws SQLException {
+        UserModel userModel = new UserModel();
+        userModel.setId(rs.getInt("id"));
+        userModel.setName(rs.getString("name"));
+        return userModel;
+    }
+}
+
+class UserModelSqlQuery extends SqlQuery<UserModel> {
+
+    public UserModelSqlQuery(JdbcTemplate jdbcTemplate) {
+        super.setJdbcTemplate(jdbcTemplate);
+        super.setSql("select * from test where name = ?");
+        super.declareParameter(new SqlParameter(Types.VARCHAR));
+        compile();
+    }
+
+    @Override
+    protected RowMapper<UserModel> newRowMapper(Object[] parameters, Map context) {
+        return new UserRowMapper();
+    }
+}
+
